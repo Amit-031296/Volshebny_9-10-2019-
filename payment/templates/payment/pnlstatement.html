@@ -182,7 +182,7 @@
         function myFunction3() {
             var Roe = document.getElementById("groupdescription_roe").value;
             var temp_amount = document.getElementById("temp_amount").value;
-            Total_amount = Roe * temp_amount ;
+            Total_amount = (Roe * temp_amount).toFixed(2) ;
             document.getElementById("groupdescription_amount").value = Total_amount;
         }
         </script>

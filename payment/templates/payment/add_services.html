@@ -164,7 +164,7 @@
                             <div class="table-wrap">
                                 <div class="table-responsive table-bordered">
                                     {% if service_list %}
-                                    <table id="TestTable" class="display" style="width:100%">
+                                    <table id="test_table" class="display" style="width:100%">
                                         <thead>
                                             <tr>
                                                 <th>Sr No.</th>
@@ -172,7 +172,9 @@
                                                 <th>Vendor</th>
                                                 <th>Amount</th>
                                                 <th>Update</th>
+                                                {% if user_role == 1 %}
                                                 <th>Delete</th>
+                                                {% endif %}
                                                 
                                             </tr>
                                         </thead>
@@ -189,88 +191,104 @@
                                 <span class="fa fa-edit"></span>
                             </button>
                         </td>
+                        {% if user_role == 1 %}
                         <td>
                             <button type="button" class="delete_air_ticket btn btn-sm btn-danger" data-id="{% url 'payment:addservices_airticket_delete' service_list.pk %}">
                                 <span class="fa fa-trash"></span>
                             </button>
-                        </td>   
+                        </td> 
+                        {% endif %}  
                         {% elif service_list.service_type == "Visa Cost Service" %}
                          <td>
                             <button type="button" class="update_visa_cost btn btn-sm btn-primary" data-id="{% url 'payment:addservices_visacost_update' service_list.pk %}">
                                 <span class="fa fa-edit"></span>
                             </button>
                         </td>
+                        {% if user_role == 1 %}
                         <td>
                             <button type="button" class="delete_visa_cost btn btn-sm btn-danger" data-id="{% url 'payment:addservices_visacost_delete' service_list.pk %}">
                                 <span class="fa fa-trash"></span>
                             </button>
                         </td>  
+                        {% endif %}
                         {% elif service_list.service_type == "Hotel Quatation Service" %}
                         <td>
                             <button type="button" class="update_hotel btn btn-sm btn-primary" data-id="{% url 'payment:addservices_hotel_update' service_list.pk %}">
                                 <span class="fa fa-edit"></span>
                             </button>
                         </td>
+                        {% if user_role == 1 %}
                         <td>
                             <button type="button" class="delete_hotel btn btn-sm btn-danger" data-id="{% url 'payment:addservices_hotel_delete' service_list.pk %}">
                                 <span class="fa fa-trash"></span>
                             </button>
                         </td>  
+                        {% endif %}
                         {% elif service_list.service_type == "Restuarant Quatation Service" %}
                          <td>
                             <button type="button" class="update_restaurant btn btn-sm btn-primary" data-id="{% url 'payment:addservices_restaurant_update' service_list.pk %}">
                                 <span class="fa fa-edit"></span>
                             </button>
                         </td>
+                        {% if user_role == 1 %}
                         <td>
                             <button type="button" class="delete_restaurant btn btn-sm btn-danger" data-id="{% url 'payment:addservices_restaurant_delete' service_list.pk %}">
                                 <span class="fa fa-trash"></span>
                             </button>
                         </td>  
+                        {% endif %}
                         {% elif service_list.service_type == "Entrances Quatation Service" %}
                         <td>
                             <button type="button" class="update_entrances btn btn-sm btn-primary" data-id="{% url 'payment:addservices_entrances_update' service_list.pk %}">
                                 <span class="fa fa-edit"></span>
                             </button>
                         </td>
+                        {% if user_role == 1 %}
                         <td>
                             <button type="button" class="delete_entrances btn btn-sm btn-danger" data-id="{% url 'payment:addservices_entrances_delete' service_list.pk %}">
                                 <span class="fa fa-trash"></span>
                             </button>
                         </td> 
+                        {% endif %}
                         {% elif service_list.service_type == "SapSan Quatation Service" %} 
                          <td>
                             <button type="button" class="update_sapsan btn btn-sm btn-primary" data-id="{% url 'payment:addservices_sapsan_update' service_list.pk %}">
                                 <span class="fa fa-edit"></span>
                             </button>
                         </td>
+                        {% if user_role == 1 %}
                         <td>
                             <button type="button" class="delete_sapsan btn btn-sm btn-danger" data-id="{% url 'payment:addservices_sapsan_delete' service_list.pk %}">
                                 <span class="fa fa-trash"></span>
                             </button>
                         </td>
+                        {% endif %}
                         {% elif service_list.service_type == "Guide Service" %} 
                          <td>
                             <button type="button" class="update_guide btn btn-sm btn-primary" data-id="{% url 'payment:addservices_guide_update' service_list.pk %}">
                                 <span class="fa fa-edit"></span>
                             </button>
                         </td>
+                        {% if user_role == 1 %}
                         <td>
                             <button type="button" class="delete_guide btn btn-sm btn-danger" data-id="{% url 'payment:addservices_guide_delete' service_list.pk %}">
                                 <span class="fa fa-trash"></span>
                             </button>
                         </td>
+                        {% endif %}
                         {% elif service_list.service_type == "Transport Service" %} 
                          <td>
                             <button type="button" class="update_transport btn btn-sm btn-primary" data-id="{% url 'payment:addservices_transport_update' service_list.pk %}">
                                 <span class="fa fa-edit"></span>
                             </button>
                         </td>
+                        {% if user_role == 1 %}
                         <td>
                             <button type="button" class="delete_transport btn btn-sm btn-danger" data-id="{% url 'payment:addservices_transport_delete' service_list.pk %}">
                                 <span class="fa fa-trash"></span>
                             </button>
                         </td>
+                        {% endif %}
                         
                         {% endif %}     
 
@@ -306,17 +324,23 @@
 </div>
 {% endblock content %}
 
-{% block script %}
-<script type="text/javascript">
-    $(document).ready(function() {
-        $('#TestTable').DataTable();
-    });
-</script>
 
-{% endblock %}
 
 
 {% block extrascript %}
+<script type="text/javascript">
+ $(document).ready(function() {
+$('#test_table').DataTable({
+	orderCellsTop: true,
+    fixedHeader: false,
+    "lengthMenu": [ [100, 200, 500, -1], [100, 200, 500, "All"] ],
+ {% comment %}  dom: 'Bfrtip',
+  buttons: [
+    'excelHtml5', 'csvHtml5'
+  ] {% endcomment %}
+});
+});
+</script>
   <script>
       $(function () {
         $("#datetimepicker1").datetimepicker();

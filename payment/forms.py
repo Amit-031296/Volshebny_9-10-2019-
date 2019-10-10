@@ -99,6 +99,7 @@ class AddVisacost(BSModalForm):
         model = VisaCostQuatation
         fields=('visacost_type_of_Visa',
         'visacost_time_period',
+        'visacost_service_cost',
         'service_roe',
         'service_gst',
         'service_quote_per_head',

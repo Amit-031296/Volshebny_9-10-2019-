@@ -1,13 +1,12 @@
 {% extends 'payment/base.html' %}
-
 {% load group_vtref_filters %}
 {% load static %}
 
-{% block headscript %}
+{% block stylesheets %}
 <link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
 <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-<script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
-{% endblock headscript %}
+
+{% endblock stylesheets %}
 
 {% block content %}
 <!-- Modal for CURD Operation -->
@@ -31,7 +30,7 @@
 		<hr>
 		<div>
 			{% if vendor_pending %}
-			<table id="TestTable">
+			<table id="test_table">
 				<thead style="font-size:12px">
 					<tr>
 						<th class="text-center" scope="col">VT Ref Number</th>
@@ -43,13 +42,15 @@
 						<th class="text-center" scope="col">Service Payment Status</th>
 						<th class="text-center" scope="col">Service Payment Method</th>
 						<th class="text-center" scope="col">Update</th>
+						{% if user_role == 1 %}
 						<th class="text-center" scope="col">Delete</th>
+						{% endif %}
 					</tr>
 				</thead>
 				<tbody style="font-size:11px">
 					{% for vendor in vendor_pending %}
 					<tr>
-						<td class="text-center"><a href="{% url 'payment:add_services' vendor.service_id %}">{{ group_dict|get_item:vendor.service_id }}{{ vendor.service_id }}</a></td>
+						<td class="text-center"><a href="{% url 'payment:add_services' vendor.service_id %}">{{ group_dict|get_item:vendor.service_id }}</a></td>
 						<td class="text-center">{{ vendor.service_number_of_passengers }}</td>
 						<td class="text-center">{{ vendor.service_quote_per_head }}</td>
 						<td class="text-center">{{ vendor.service_roe }}</td>
@@ -58,15 +59,17 @@
 						<td class="text-center">{{ vendor.service_vendor_payment_status }}</td>
 						<td class="text-center">{{ vendor.service_payment_method }}</td>
                         <td>
-							<button type="button" class="update-book btn btn-sm btn-primary" data-id="{% url 'payment:vendor_service_update' vendor.service_id %}">
+							<button type="button" class="update-book btn btn-sm btn-primary" data-id="{% url 'payment:vendor_service_update' vendor.pk %}">
 								<span class="fa fa-edit"></span>
 							</button>
 						</td>
+						{% if user_role == 1 %}
 						<td>
-							<button type="button" class="delete-book btn btn-sm btn-danger" data-id="{% url 'payment:vendor_service_delete' vendor.service_id %}">
+							<button type="button" class="delete-book btn btn-sm btn-danger" data-id="{% url 'payment:vendor_service_delete' vendor.pk %}">
 								<span class="fa fa-trash"></span>
 							</button>
 						</td>
+						{% endif %}
 					</tr>
 					{% endfor %}
 				</tbody>
@@ -86,16 +89,32 @@
 </div>
 <!--PAGE CONTENT ENDS HERE-->
 {% endblock %}
-
 {% block script %}
-<script type="text/javascript">
-	$(document).ready(function() {
-		$('#TestTable').DataTable();
-	});
-</script>
+<script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/fixedheader/3.1.5/js/dataTables.fixedHeader.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.flash.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
+
 {% endblock %}
 
 {% block extrascript %}
+<script type="text/javascript">
+ $(document).ready(function() {
+$('#test_table').DataTable({
+	orderCellsTop: true,
+    fixedHeader: false,
+    "lengthMenu": [ [100, 200, 500, -1], [100, 200, 500, "All"] ],
+ {% comment %}  dom: 'Bfrtip',
+  buttons: [
+    'excelHtml5', 'csvHtml5'
+  ] {% endcomment %}
+});
+});
+</script>
 <script type="text/javascript">
 	$(function() {
 		$(".update-book").each(function() {

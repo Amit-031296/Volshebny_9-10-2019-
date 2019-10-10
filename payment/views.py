@@ -65,7 +65,7 @@ def forgetpassword(request):
     """Hub Connect Survey Form Data Collected
     Parameters: HttpRequest objects
     Returns : All Data in Leads Table"""
-    user_role = request.user.role
+    user_role = request.user.user_role
     leads = Leads.objects.all()
     page_active = 3
     data = { 'user_role': user_role,
@@ -107,6 +107,7 @@ def report_error_success(request):
 
 #Experiment View
 def experiment(request):
+    user_role = request.user.user_role
     clients = Client.objects.all()
     clients_dict = {}
     for client in clients:
@@ -129,7 +130,7 @@ def experiment(request):
     'groupdescription_client_id'))))
     tour_cost_list = [ functions.group_cost_list_generator(one_tour_detials) for one_tour_detials in tour_list ]
     pnl_dict = dict(zip(tour_list,tour_cost_list))
-    data = { 'pnl_dict':pnl_dict,'clients_dict':clients_dict}
+    data = { 'pnl_dict':pnl_dict,'clients_dict':clients_dict,'user_role':user_role}
     return render(request,'payment/experiment.html',data)
 
 # ------ Sidemenu Views -----
@@ -148,6 +149,7 @@ def group_description_form(request):
 # Tour Details List
 @login_required(login_url='/user_login')
 def pnllist(request):
+    user_role = request.user.user_role
     clients = Client.objects.all()
     clients_dict = {}
     for client in clients:
@@ -171,12 +173,13 @@ def pnllist(request):
     'group_description_service_calculation_type'))))
     tour_cost_list = [ functions.group_cost_list_generator(one_tour_detials) for one_tour_detials in tour_list ]
     pnl_dict = dict(zip(tour_list,tour_cost_list))
-    data = { 'pnl_dict':pnl_dict,'clients_dict':clients_dict}
+    data = { 'pnl_dict':pnl_dict,'clients_dict':clients_dict,'user_role':user_role}
     return render(request,'payment/pnllist.html',data)
 
 # Services - Add Services
 @login_required(login_url='/user_login')
 def add_services(request,pk):
+    user_role = request.user.user_role
     vendors = Vendor.objects.all()
     group_object = Groupdescription.objects.get(pk=pk)
     air_tickets = list(AirTicketsQuatation.objects.all().filter(service_id=pk))
@@ -228,13 +231,14 @@ def add_services(request,pk):
     vendor_dict = {}
     for vendor in vendors:
         vendor_dict[vendor.pk] = vendor.vendor_name
-    data = { 'grdes' : group_object,'service_list':service_list,'vendors':vendors,'payment_total':payment_total,'vendor_dict':vendor_dict}
+    data = { 'grdes' : group_object,'service_list':service_list,'vendors':vendors,'payment_total':payment_total,'vendor_dict':vendor_dict,'user_role':user_role}
     return render(request,'payment/add_services.html',data)
 
 # Tour Summary Page
 @login_required(login_url='/user_login')
 def tour_summary(request,pk):
     # Get tour summary Object as per tour summary Id Passed
+    user_role = request.user.user_role
     vendors = Vendor.objects.all()
     clients = Client.objects.all()
     tour_order = Groupdescription.objects.get(pk=pk)
@@ -299,7 +303,8 @@ def tour_summary(request,pk):
         'payment_total':payment_total,
         'pnlbalance':pnlbalance,
         'client_name': client_name,
-        'vendor_dict':vendor_dict
+        'vendor_dict':vendor_dict,
+        'user_role':user_role,
      }
     return render(request,'payment/tour_summary.html',data)
 
@@ -313,12 +318,13 @@ def client_list(request):
     final = [client_status_list[i * 2:(i + 1) * 2] for i in range((len(client_status_list) + 2 - 1) // 2 )]
     client_dict = dict(zip(x,final))
     clientlist = client_dict
-    userrole = request.user.user_role
-    return render(request,'payment/clientlist.html',{'clientlist':clientlist,'userrole':userrole })
+    user_role = request.user.user_role
+    return render(request,'payment/clientlist.html',{'clientlist':clientlist,'user_role':user_role })
 
 # Vendor Tour List
 @login_required(login_url='/user_login')
 def vendor_list(request):
+    user_role = request.user.user_role
     vendorlist = Vendor.objects.all()
     vendor_payment_status = ['Pending','Done','Payment_Pending_Amonut','Payment_Done_Amount']
     x = list(set(list(Vendor.objects.values_list('pk','vendor_name'))))
@@ -326,71 +332,93 @@ def vendor_list(request):
     final = [vendor_status_list[i * 4:(i + 1) * 4] for i in range((len(vendor_status_list) + 4 - 1) // 4 )]
     vendor_dict = dict(zip(x,final))
     vendorlist = vendor_dict
-    return render(request,'payment/vendorlist.html',{'vendorlist':vendorlist})
+    return render(request,'payment/vendorlist.html',{'vendorlist':vendorlist,'user_role':user_role})
+
+# All Services Vendors List
+@login_required(login_url='/user_login')
+def all_services_vendor_list(request):
+    user_role = request.user.user_role
+    vendorlist = Vendor.objects.all()
+    vendor_payment_status = ['Pending','Done','Payment_Pending_Amonut','Payment_Done_Amount']
+    for vendor in vendorlist:
+        air_tickets = list(AirTicketsQuatation.objects.all().filter(service_vendor_id=vendor.pk))
+        visa_costs = list(VisaCostQuatation.objects.all().filter(service_vendor_id=vendor.pk))
+        hotel_quatations = list(HotelQuatation.objects.all().filter(service_vendor_id=vendor.pk))
+        restaurant_quatations = list(RestaurantQuatation.objects.all().filter(service_vendor_id=vendor.pk))
+        entrances_quatations = list(EntrancesQuatation.objects.all().filter(service_vendor_id=vendor.pk))
+        sapsan_quatations = list(SapSanQuatation.objects.all().filter(service_vendor_id=vendor.pk))
+        guide_quatations = list(Guide.objects.all().filter(service_vendor_id=vendor.pk))
+        transport_names = list(Transport.objects.all().filter(service_vendor_id=vendor.pk))
+    service_list = []
+    service_list = air_tickets+visa_costs+hotel_quatations+restaurant_quatations+entrances_quatations+sapsan_quatations+guide_quatations+transport_names
+    data = { 'service_list' : service_list,'user_role':user_role}
+    return render(request,'payment/allservicesvendorlist.html',data)
+
 
 # --All vendor accounts dropdown Views -- 
 # -- vendor_accounts_airticket_quatation View---
 @login_required(login_url='/user_login')
 def vendor_accounts_airticket_quatation(request):
     airticket_list=functions.filtering_vendors("Air Ticket Service")
-    userrole = request.user.user_role
-    return render(request, 'payment/vendor_accounts_airticket_quatation.html',{'airticket_list':airticket_list,'userrole':userrole })
+    user_role = request.user.user_role
+    return render(request, 'payment/vendor_accounts_airticket_quatation.html',{'airticket_list':airticket_list,'user_role':user_role })
 
 # -- vendor_accounts_visacost_quatation View---
 @login_required(login_url='/user_login')
 def vendor_accounts_visacost_quatation(request):
     visacost_list=functions.filtering_vendors("Visa Cost Service")
-    userrole = request.user.user_role
-    return render(request,'payment/vendor_accounts_visacost_quatation.html',{'visacost_list':visacost_list,'userrole':userrole })
+    user_role = request.user.user_role
+    return render(request,'payment/vendor_accounts_visacost_quatation.html',{'visacost_list':visacost_list,'user_role':user_role })
 
 # -- vendor_accounts_hotel_quatation View---
 @login_required(login_url='/user_login')
 def vendor_accounts_hotel_quatation(request):
     hotel_list=functions.filtering_vendors("Hotel Quatation Service")
-    userrole = request.user.user_role
-    return render(request,'payment/vendor_accounts_hotel_quatation.html',{'hotel_list':hotel_list,'userrole':userrole })
+    user_role = request.user.user_role
+    return render(request,'payment/vendor_accounts_hotel_quatation.html',{'hotel_list':hotel_list,'user_role':user_role })
 
 # -- vendor_accounts_restaurant_quatation View---
 @login_required(login_url='/user_login')
 def vendor_accounts_restaurant_quatation(request):
     restaurant_list=functions.filtering_vendors("Restuarant Quatation Service")
-    userrole = request.user.user_role
-    return render(request,'payment/vendor_accounts_restaurant_quatation.html',{'restaurant_list':restaurant_list,'userrole':userrole })
+    user_role = request.user.user_role
+    return render(request,'payment/vendor_accounts_restaurant_quatation.html',{'restaurant_list':restaurant_list,'user_role':user_role })
 
 # -- vendor_accounts_entrances_quatation View---
 @login_required(login_url='/user_login')
 def vendor_accounts_entrances_quatation(request):
     entrances_list=functions.filtering_vendors("Entrances Quatation Service")
-    userrole = request.user.user_role
-    return render(request,'payment/vendor_accounts_entrances_quatation.html',{'entrances_list':entrances_list,'userrole':userrole })
+    user_role = request.user.user_role
+    return render(request,'payment/vendor_accounts_entrances_quatation.html',{'entrances_list':entrances_list,'user_role':user_role })
 
 # -- vendor_accounts_sapsan_quatation View---
 @login_required(login_url='/user_login')
 def vendor_accounts_sapsan_quatation(request):
     sapsan_list=functions.filtering_vendors("SapSan Quatation Service")
-    userrole = request.user.user_role
-    return render(request,'payment/vendor_accounts_sapsan_quatation.html',{'sapsan_list':sapsan_list,'userrole':userrole })
+    user_role = request.user.user_role
+    return render(request,'payment/vendor_accounts_sapsan_quatation.html',{'sapsan_list':sapsan_list,'user_role':user_role })
 
 # -- vendor_accounts_guide View---
 @login_required(login_url='/user_login')
 def vendor_accounts_guide(request):
     guide_list=functions.filtering_vendors("Guide Service")
-    userrole = request.user.user_role
-    return render(request,'payment/vendor_accounts_guide.html',{'guide_list':guide_list,'userrole':userrole })
+    user_role = request.user.user_role
+    return render(request,'payment/vendor_accounts_guide.html',{'guide_list':guide_list,'user_role':user_role })
 
 # -- vendor_accounts_transport View---
 @login_required(login_url='/user_login')
 def vendor_accounts_transport(request):
     transport_list=functions.filtering_vendors("Transport Service")
-    userrole = request.user.user_role
-    return render(request,'payment/vendor_accounts_transport.html',{'transport_list':transport_list,'userrole':userrole })
+    user_role = request.user.user_role
+    return render(request,'payment/vendor_accounts_transport.html',{'transport_list':transport_list,'user_role':user_role })
 
 #< -----Users list Views ------>
 @login_required(login_url='/user_login')
 def user_list(request):
+    user_role = request.user.user_role
     users = CustomUser.objects.all()
     #userrole = request.user.user_role
-    data = { 'users' : users }
+    data = { 'users' : users,'user_role':user_role }
     return render(request,'payment/userlist.html',data)
 #</-----Users list Views------>
 
@@ -507,6 +535,7 @@ def add_service_visacost_form_submit(request,service_id):
         visacost_time_period = request.POST['visacost_time_period']
         visacost_quote_per_head = request.POST['visacost_quote_per_head']
         visacost_roe = request.POST['visacost_roe']
+        visacost_service_cost = request.POST['visacost_service_cost']
         visacost_type_of_GST = request.POST['visacost_type_of_GST']
         visacost_total_amount = request.POST['visacost_total_amount']
         vendor_id = request.POST['visacost_service_vendor_id']
@@ -515,6 +544,7 @@ def add_service_visacost_form_submit(request,service_id):
         VisaCostQuatation.objects.create(visacost_type_of_Visa = visacost_type_of_Visa,
                                         service_number_of_passengers = visacost_number_of_passengers,
                                         visacost_time_period = visacost_time_period,
+                                        visacost_service_cost = visacost_service_cost,
                                         service_roe = visacost_roe,
                                         service_gst = visacost_type_of_GST,
                                         service_id = group_object,
@@ -777,11 +807,11 @@ def client_payment_details_list(request,client_id,payment_status):
     clients_dict = {}
     for client in clients:
         clients_dict[client.client_name] = client.client_name
-    userrole = request.user.user_role
+    user_role = request.user.user_role
     client_name = Client.objects.get(pk=client_id).client_name
     client_object = Client.objects.get(pk=client_id)
     client_pending = Groupdescription.objects.filter(groupdescription_client_id=client_object,groupdescription_payment_status=payment_status).all()
-    data = {"userrole":userrole, "groupdesc": client_pending,"payment_status":payment_status,"client_name":client_name,"clients_dict":clients_dict }
+    data = {"user_role":user_role, "groupdesc": client_pending,"payment_status":payment_status,"client_name":client_name,"clients_dict":clients_dict }
     return render(request, 'payment/client_payment_details.html',data)
 # </--- Clients CURD Views ---
 
@@ -824,10 +854,10 @@ class add_new_vendor_view(BSModalCreateView):
 @login_required(login_url='/user_login')
 def vendor_payment_details_list(request,vendor_id,payment_status):
     group_objects = Groupdescription.objects.all()
+    user_role = request.user.user_role
     group_dict = {}
     for group_object in group_objects:
         group_dict[group_object.pk] = group_object.groupdescription_vtrefNo 
-
     vendor_name = Vendor.objects.get(pk=vendor_id).vendor_name
     vendor_object = Vendor.objects.get(pk=vendor_id)
     vendor_pending = Service.objects.filter(service_vendor_id=vendor_object,service_vendor_payment_status=payment_status).all()
@@ -854,7 +884,7 @@ def vendor_payment_details_list(request,vendor_id,payment_status):
     for guide in guide_names:
         sum = sum + guide.service_total_amount
     payment_total = sum
-    data = {"vendor_pending": vendor_pending,"payment_status":payment_status,"vendor_name":vendor_name,'payment_total':payment_total,'group_dict':group_dict }
+    data = {"vendor_pending": vendor_pending,"payment_status":payment_status,"vendor_name":vendor_name,'payment_total':payment_total,'group_dict':group_dict,'user_role':user_role }
     return render(request, 'payment/vendor_payment_details.html',data)
 
 # </---- Vendors CURD views ----

@@ -4,17 +4,9 @@
 
 {% block stylesheets %}
 <link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
-
-{% endblock %}
-
-
-{% block headscript %}
 <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 
-<!--jQuery-->
-<script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
-
-{% endblock headscript %}
+{% endblock stylesheets %}
 
 {% block content %}
 <!-- Modal for CURD Operation -->
@@ -49,7 +41,9 @@
                                      <th class="text-center" scope="col">Total Amount</th>
                                      <th class="text-center" scope="col">Payment Status</th>
                                     <th class="text-center" scope="col">Update</th>
+                                    {% if user_role == 1 %}
                                     <th class="text-center" scope="col">Delete</th>
+                                    {% endif %}
                                 </tr>
                             </thead>
                             <tbody style="font-size:11px">
@@ -69,11 +63,13 @@
                                 <span class="fa fa-edit"></span>
                             </button>
                         </td>
+                        {% if user_role == 1 %}
                         <td>
                             <button type="button" class="delete_guide btn btn-sm btn-danger" data-id="{% url 'payment:vendor_guide_detail_delete' guide.pk %}">
                                 <span class="fa fa-trash"></span>
                             </button>
                         </td>   
+                        {% endif %}
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -85,15 +81,33 @@
             </div>
             </div>
 {% endblock %}
+
 {% block script %}
-<script type="text/javascript">
-        $(document).ready(function () {
-            $('#test_table').DataTable();
-        });
-    </script> 
+<script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/fixedheader/3.1.5/js/dataTables.fixedHeader.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.flash.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
 
 {% endblock %}
+
 {% block extrascript %}
+<script type="text/javascript">
+ $(document).ready(function() {
+$('#test_table').DataTable({
+	orderCellsTop: true,
+    fixedHeader: false,
+    "lengthMenu": [ [100, 200, 500, -1], [100, 200, 500, "All"] ],
+ {% comment %}  dom: 'Bfrtip',
+  buttons: [
+    'excelHtml5', 'csvHtml5'
+  ] {% endcomment %}
+});
+});
+</script>
 <script type="text/javascript">
     $(function() {
         $(".update_guide").each(function() {

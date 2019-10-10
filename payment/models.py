@@ -152,6 +152,7 @@ class VisaCostQuatation(Service):
         visacost_date_and_time_of_generation = models.DateTimeField(default=timezone.now)
         visacost_type_of_Visa = models.CharField(choices=TYPE_OF_VISA,max_length=920,default="Tourist single")
         visacost_time_period = models.CharField(choices=TIME_PERIOD,max_length=920,default="Normal")
+        visacost_service_cost = models.FloatField(default=0.0,blank=True)
 
         def __str__(self):
                 return str(self.pk )

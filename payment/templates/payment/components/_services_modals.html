@@ -166,6 +166,13 @@
                             <input type="text" class="form-control" id="visacost_roe" name="visacost_roe" min="1">
                         </div>
                         <br>
+                        <div>
+                            <label for="VisaCost Service Cost">VisaCost Service Cost</label>
+                            
+                                <input type="text" class="form-control" id="visacost_service_cost" name="visacost_service_cost" min="0">
+                        </div>
+                        <br>
+
                          <div>
                             <label for="GST Percentage">GST Percentage</label>
                             
@@ -751,7 +758,7 @@
                 var gst_percent = document.getElementById("airticket_type_of_GST").value;
                 var gst = gst_percent/100;
                 var nod = quote_per_head * no_of_passenger * Roe ;
-                var gst_amount = nod + (nod*gst);
+                var gst_amount = (nod + (nod*gst)).toFixed(2);
                 
                 document.getElementById("airticket_total_amount").value = gst_amount;
             }
@@ -762,9 +769,11 @@
                 var no_of_passenger = document.getElementById("visacost_number_of_passengers").value;
                 var Roe = document.getElementById("visacost_roe").value;
                 var gst_percent = document.getElementById("visacost_type_of_GST").value;
+                var service_cost = document.getElementById("visacost_service_cost").value;
+                var service_cost1 = parseInt(service_cost, 10);
                 var gst = gst_percent/100;
-                var nod = quote_per_head * no_of_passenger * Roe ;
-                var gst_amount = nod + (nod*gst);
+                var nod = quote_per_head * no_of_passenger * Roe;
+                var gst_amount = (nod + (nod*gst) + service_cost1).toFixed(2);
                 
                 document.getElementById("visacost_total_amount").value = gst_amount;
             }
@@ -777,7 +786,7 @@
                 var gst_percent = document.getElementById("hotel_type_of_GST").value;
                 var gst = gst_percent/100;
                 var nod = quote_per_head * no_of_passenger * Roe ;
-                var gst_amount = nod + (nod*gst);
+                var gst_amount = (nod + (nod*gst)).toFixed(2);
                 
                 document.getElementById("hotel_total_amount").value = gst_amount;
             }
@@ -790,7 +799,7 @@
                 var gst_percent = document.getElementById("restaurant_type_of_GST").value;
                 var gst = gst_percent/100;
                 var nod = quote_per_head * no_of_passenger * Roe ;
-                var gst_amount = nod + (nod*gst);
+                var gst_amount = (nod + (nod*gst)).toFixed(2);
                 
                 document.getElementById("restaurant_total_amount").value = gst_amount;
             }
@@ -803,7 +812,7 @@
                 var gst_percent = document.getElementById("entrances_type_of_GST").value;
                 var gst = gst_percent/100;
                 var nod = quote_per_head * no_of_passenger * Roe ;
-                var gst_amount = nod + (nod*gst);
+                var gst_amount = (nod + (nod*gst)).toFixed(2);
                 
                 document.getElementById("entrances_total_amount").value = gst_amount;
             }
@@ -817,7 +826,7 @@
                 var gst_percent = document.getElementById("sapsan_type_of_GST").value;
                 var gst = gst_percent/100;
                 var nod = quote_per_head * no_of_passenger * Roe ;
-                var gst_amount = nod + (nod*gst);
+                var gst_amount = (nod + (nod*gst)).toFixed(2);
                 
                 document.getElementById("sapsan_total_amount").value = gst_amount;
             }
@@ -830,7 +839,7 @@
                 var gst_percent = document.getElementById("guide_type_of_GST").value;
                 var gst = gst_percent/100;
                 var nod = quote_per_head * no_of_passenger * Roe ;
-                var gst_amount = nod + (nod*gst);
+                var gst_amount = (nod + (nod*gst)).toFixed(2);
                 
                 document.getElementById("guide_total_amount").value = gst_amount;
             }
@@ -843,7 +852,7 @@
                 var gst_percent = document.getElementById("transport_type_of_GST").value;
                 var gst = gst_percent/100;
                 var nod = quote_per_head * no_of_passenger * Roe ;
-                var gst_amount = nod + (nod*gst);
+                var gst_amount = (nod + (nod*gst)).toFixed(2);
                 
                 document.getElementById("transport_total_amount").value = gst_amount;
             }

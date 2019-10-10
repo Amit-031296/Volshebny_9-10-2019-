@@ -48,6 +48,9 @@ path('clientlist/', views.client_list, name='clientlist'),
 # Vendors List
 path('vendorlist/', views.vendor_list, name='vendorlist'),
 
+# All Services Vendors List
+path('all_services_vendorlist/', views.all_services_vendor_list, name='all_services_vendorlist'),
+
 # experiment
 path('experiment/', views.experiment, name='experiment'),
 
