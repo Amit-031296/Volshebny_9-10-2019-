@@ -1,20 +1,12 @@
 {% extends 'payment/base.html' %}
-
+{% load service_list_filters %}
 {% load static %}
 
 {% block stylesheets %}
 <link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
-
-{% endblock %}
-
-
-{% block headscript %}
 <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 
-<!--jQuery-->
-<script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
-
-{% endblock headscript %}
+{% endblock stylesheets %}
 
 
 {% block content %}
@@ -37,58 +29,60 @@
 
         <hr>
             <div>   
-                
+                {% if vendor_list %}  
                         <table id="test_table" class="display" style="width:100%">
                             <thead>
                                 <tr>
                                                         <th>Serial No.</th>
                                                         <th>Vendor Id</th>
                                                         <th>Vendor Name</th>
+                                                        
                                                         <th>Payment Pending</th>
                                                         <th>Payment Done</th>
                                                         <th>Amount Pending</th>
                                                         <th>Amount Done</th>
                                                         <th>Update</th>
-                                                        {% comment %}
-                                                        {% if userrole == 1 %}
-                                                        {% endif %} 
-                                                        {% endcomment %}
-                                        
+                                                        {% if user_role == 1 %}
                                                         <th>Delete</th>
+                                                        {% endif %}
                                                         
                               </tr>
                             </thead>
                             <tbody>
-                           
+                           {% for vendor in vendor_list %}
                             <tr>
+
                             <th class="text-center" scope="row">{{ forloop.counter }}</th>
-                       <td class="text-center">{{ key.0 }}</td>
-                        <td class="text-center">{{ key.1 }}</td>
-                        <td class="text-center"><a href="">{{value.0}}</a> </td>
-                       <td class="text-center"><a href="">{{value.1}}</a></td>
-                        <td class="text-center">{{value.2}}</a></td>
-                        <td class="text-center">{{value.3}}</a></td>
+                       <td class="text-center">{{ vendor.pk }}</td>
+                       
+                        <td class="text-center">{{ vendor.vendor_name }}</td>
+                        <td class="text-center"><a href="{% url 'payment:vendor_payment_list' payment_status='Pending' vendor_id=vendor.pk %}">{{ vendor_dict_pending|get_item:vendor.pk}}</a> </td>
+                       <td class="text-center"><a href="{% url 'payment:vendor_payment_list' payment_status='Done' vendor_id=vendor.pk %}">{{ vendor_dict_done|get_item:vendor.pk}}</a></td>
+                        <td class="text-center">{{ vendor_amount_pending|get_item:vendor.pk}}</td>
+                        <td class="text-center">{{ vendor_amount_done|get_item:vendor.pk}}</td>
                         <td>
-                            <button type="button" class="update-book btn btn-sm btn-primary" data-id="">
+                            <button type="button" class="update-book btn btn-sm btn-primary" data-id="{% url 'payment:vendor_update' pk=vendor.pk %}">
                                 <span class="fa fa-edit"></span>
                             </button>
                         </td>
-                        
+                        {% if user_role == 1 %}
                         <td>
                         
-                            <button type="button" class="delete-book btn btn-sm btn-danger" data-id="">
+                            <button type="button" class="delete-book btn btn-sm btn-danger" data-id="{% url 'payment:vendor_delete' pk=vendor.pk %}">
                                 <span class="fa fa-trash"></span>
                             </button>
                             
                         </td>
+                        {% endif %}
                         
                         </tr>
+                        {% endfor %}
                         
                              </tbody>
                         </table>
-                       
+                       {% else %}
             <p class="no-leads text-primary">No entry added yet.</p>
-           
+           {% endif %}
                 </div>
                 <!--TEST TABLE ENDS HERE-->
             </div>
@@ -96,16 +90,32 @@
         <!--PAGE CONTENT ENDS HERE-->
         {% endblock %}
 
-    {% block script %}
-    <script type="text/javascript">
-    $(document).ready(function() {
-        $('#test_table').DataTable();
-    });
-</script>
+{% block script %}
+<script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/fixedheader/3.1.5/js/dataTables.fixedHeader.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.flash.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
 
-    {% endblock %}
+{% endblock %}
 
     {% block extrascript %}
+        <script type="text/javascript">
+ $(document).ready(function() {
+$('#test_table').DataTable({
+    orderCellsTop: true,
+    fixedHeader: false,
+    "lengthMenu": [ [100, 200, 500, -1], [100, 200, 500, "All"] ],
+  {% comment %} dom: 'Bfrtip',
+  buttons: [
+    'excelHtml5', 'csvHtml5'
+  ] {% endcomment %}
+});
+});
+</script>
     <script type="text/javascript">
     $(function() {
               $(".create_new_vendor").modalForm({

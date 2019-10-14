@@ -33,6 +33,31 @@ def vendor_payment_count(a,vendor_payment_status_one):
         for num in service_cost_list:
             cost+=num
         return cost
+    
+def all_vendor_services_status_payment_count(vendor_id,payment_status_one):
+    count = Service.objects.filter(service_vendor_id = vendor_id,service_vendor_payment_status=payment_status_one).all().count()
+    return count
+
+def all_vendor_services_status_payment_amountpending_count(vendor_id,payment_amount_one):
+        all_pending_services_of_one_tour  = Service.objects.filter(service_vendor_id= vendor_id,service_vendor_payment_status=payment_amount_one)
+        service_cost_list = []
+        for service in all_pending_services_of_one_tour:
+            service_cost_list.append(service.service_total_amount)
+        cost_pending = 0
+        for num in service_cost_list:
+            cost_pending+=num
+        return cost_pending    
+def all_vendor_services_status_payment_amountpaid_count(vendor_id,payment_amount_one):       
+        all_paid_services_of_one_tour  = Service.objects.filter(service_vendor_id= vendor_id,service_vendor_payment_status=payment_amount_one)
+        service_cost_list = []
+        for service in all_paid_services_of_one_tour:
+            service_cost_list.append(service.service_total_amount)
+        cost_done = 0
+        for num in service_cost_list:
+            cost_done+=num
+        return cost_done
+        
+
 
 def filtering_vendors(vendor_type_parameter):
     vendor_payment_status = ['Pending','Done','Payment_Pending_Amonut','Payment_Done_Amount']
@@ -221,3 +246,4 @@ def sapsan_list():
     return sapsan_dict
 
     
+

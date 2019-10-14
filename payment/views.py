@@ -338,21 +338,27 @@ def vendor_list(request):
 @login_required(login_url='/user_login')
 def all_services_vendor_list(request):
     user_role = request.user.user_role
-    vendorlist = Vendor.objects.all()
-    vendor_payment_status = ['Pending','Done','Payment_Pending_Amonut','Payment_Done_Amount']
-    for vendor in vendorlist:
-        air_tickets = list(AirTicketsQuatation.objects.all().filter(service_vendor_id=vendor.pk))
-        visa_costs = list(VisaCostQuatation.objects.all().filter(service_vendor_id=vendor.pk))
-        hotel_quatations = list(HotelQuatation.objects.all().filter(service_vendor_id=vendor.pk))
-        restaurant_quatations = list(RestaurantQuatation.objects.all().filter(service_vendor_id=vendor.pk))
-        entrances_quatations = list(EntrancesQuatation.objects.all().filter(service_vendor_id=vendor.pk))
-        sapsan_quatations = list(SapSanQuatation.objects.all().filter(service_vendor_id=vendor.pk))
-        guide_quatations = list(Guide.objects.all().filter(service_vendor_id=vendor.pk))
-        transport_names = list(Transport.objects.all().filter(service_vendor_id=vendor.pk))
-    service_list = []
-    service_list = air_tickets+visa_costs+hotel_quatations+restaurant_quatations+entrances_quatations+sapsan_quatations+guide_quatations+transport_names
-    data = { 'service_list' : service_list,'user_role':user_role}
-    return render(request,'payment/allservicesvendorlist.html',data)
+    vendor_list = Vendor.objects.filter(vendor_type='All').all()
+    vendor_payment_status = ['Pending','Done']
+    vendor_payment_amount = ['AmountPending','AmountDone']
+    service_list = Service.objects.all()
+    vendor_dict_pending = {}
+    vendor_dict_done = {}
+    vendor_amount_pending = {}
+    vendor_amount_done = {}
+     
+    for vendor in vendor_list:
+        vendor_dict_pending[vendor.pk]= functions.all_vendor_services_status_payment_count(vendor.pk,'Pending')
+        vendor_dict_done[vendor.pk]= functions.all_vendor_services_status_payment_count(vendor.pk,'Done')
+        vendor_amount_pending[vendor.pk]= functions.all_vendor_services_status_payment_amountpending_count(vendor.pk,'Pending')
+        vendor_amount_done[vendor.pk]= functions.all_vendor_services_status_payment_amountpaid_count(vendor.pk,'Done')
+    data = {'vendor_list': vendor_list,
+            'vendor_dict_pending': vendor_dict_pending,
+            'vendor_dict_done':vendor_dict_done,
+            'vendor_amount_pending':vendor_amount_pending,
+            'vendor_amount_done':vendor_amount_done,
+            'user_role':user_role }
+    return render(request,'payment/allservicesvendorlist.html', data )
 
 
 # --All vendor accounts dropdown Views -- 
@@ -826,6 +832,7 @@ class VendorUpdateView(BSModalUpdateView):
     form_class = Vendor_UpdateForm
     success_message = 'Success: Entry was updated.'
     success_url = reverse_lazy('payment:vendorlist')
+    
 
 # Delete View
 @method_decorator(login_required, name='dispatch')
@@ -899,11 +906,9 @@ class vendorserviceupdateview(BSModalUpdateView):
     
     def get_success_url(self,**kwargs):
         service_object = Service.objects.get(pk=self.kwargs['pk'])
-        vendor_data_from_service=service_object.service_vendor_id
-        vendor= Vendor.objects.get(vendor_name=vendor_data_from_service)
-        service_vendorid = vendor.pk
+        service_object_pk = int(str(service_object.service_vendor_id))
         service_paymentstatus = service_object.service_vendor_payment_status
-        return reverse_lazy('payment:vendor_payment_list', kwargs={'vendor_id':service_vendorid, 'payment_status':service_paymentstatus })
+        return reverse_lazy('payment:vendor_payment_list', kwargs={'vendor_id':service_object_pk, 'payment_status':service_paymentstatus })
 
 # -- vendorservicedeleteview View --
 @method_decorator(login_required, name='dispatch')
@@ -914,11 +919,9 @@ class vendorservicedeleteview(BSModalDeleteView):
 
     def get_success_url(self,**kwargs):
         service_object = Service.objects.get(pk=self.kwargs['pk'])
-        vendor_data_from_service=service_object.service_vendor_id
-        vendor= Vendor.objects.get(vendor_name=vendor_data_from_service)
-        service_vendorid = vendor.pk
+        service_object_pk = int(str(service_object.service_vendor_id))
         service_paymentstatus = service_object.service_vendor_payment_status
-        return reverse_lazy('payment:vendor_payment_list', kwargs={'vendor_id':service_vendorid, 'payment_status':service_paymentstatus})
+        return reverse_lazy('payment:vendor_payment_list', kwargs={'vendor_id':service_object_pk, 'payment_status':service_paymentstatus })
 
 # ---- Addservices CURD views ----
 @method_decorator(login_required, name='dispatch')

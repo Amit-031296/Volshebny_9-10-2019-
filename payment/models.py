@@ -34,8 +34,7 @@ class CustomUser(AbstractUser):
 #</---------Custom User Model --------->
 
 #<---------Vendor Model --------->
-class Vendor(models.Model):
-
+class Vendor(models.Model):        
     vendor_type_choices=(('Air Ticket Service','Air Ticket Service'),
                         ('Visa Cost Service','Visa Cost Service'),
                         ('Hotel Quatation Service','Hotel Quatation Service'),
@@ -43,7 +42,8 @@ class Vendor(models.Model):
                         ('Entrances Quatation Service','Entrances Quatation Service'),
                         ('SapSan Quatation Service','SapSan Quatation Service'),
                         ('Guide Service','Guide Service'),
-                        ('Transport Service','Transport Service'))
+                        ('Transport Service','Transport Service'),
+                        ('All','All'))
     vendor_name = models.CharField(max_length=920)
     vendor_address = models.CharField(max_length=920)
     vendor_type = models.CharField(choices=vendor_type_choices,max_length=920,default="Air Ticket Service")
@@ -92,7 +92,7 @@ class Groupdescription(models.Model):
         groupdescription_client_id = models.ForeignKey(Client, on_delete = models.CASCADE)
         groupdescription_date_time_added = models.DateTimeField(default=timezone.now)
         groupdescription_roe = models.FloatField(default=0)
-        groupdescription_remark = models.CharField(max_length=920,default="")
+        groupdescription_remark = models.CharField(max_length=920,blank=True)
         group_description_service_calculation_type = models.CharField(choices=SERVICE_COST_TYPE,max_length=920,default="EXCLUSIVE")
         
         def __str__(self):
