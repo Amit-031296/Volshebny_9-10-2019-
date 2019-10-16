@@ -43,7 +43,7 @@ class Vendor(models.Model):
                         ('SapSan Quatation Service','SapSan Quatation Service'),
                         ('Guide Service','Guide Service'),
                         ('Transport Service','Transport Service'),
-                        ('All','All'))
+                        ('All Services','All Services'))
     vendor_name = models.CharField(max_length=920)
     vendor_address = models.CharField(max_length=920)
     vendor_type = models.CharField(choices=vendor_type_choices,max_length=920,default="Air Ticket Service")
@@ -60,9 +60,11 @@ class Vendor(models.Model):
 class Client(models.Model):
 
     client_name = models.CharField(max_length=920)
-    client_address = models.CharField(max_length=920)
-    client_email = models.CharField(max_length=920,default="")
-    client_telephone = models.CharField(max_length=920,default="")
+    client_address = models.CharField(max_length=920,blank=True)
+    client_email = models.CharField(max_length=920,blank=True)
+    client_telephone = models.CharField(max_length=920,blank=True)
+    client_company_name = models.CharField(max_length=920,blank=True)
+    client_website = models.CharField(max_length=920,blank=True)
 
     def __str__(self):
         return str(self.client_name)
@@ -259,6 +261,26 @@ class Transport(Service):
         class Meta:
                 verbose_name_plural = "Transport"
                 verbose_name = "Transport"
+
+class AllServices(Service):
+        service_type = models.CharField(max_length=920,default="All Services")
+        allservices_airticket = models.BooleanField(default=False)
+        allservices_visacost = models.BooleanField(default=False)
+        allservices_hotel = models.BooleanField(default=False)
+        allservices_restaurant = models.BooleanField(default=False)
+        allservices_entrances = models.BooleanField(default=False)
+        allservices_sapsan = models.BooleanField(default=False)
+        allservices_guide = models.BooleanField(default=False)
+        allservices_transport = models.BooleanField(default=False)
+
+        def __str__(self):
+                return str(self.pk)
+
+        class Meta:
+                verbose_name_plural = "AllServices"
+                verbose_name = "AllServices"
+
+
 
 
 #</------------Transport Service Model --------->

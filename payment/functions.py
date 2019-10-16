@@ -1,4 +1,4 @@
-from payment.models import Groupdescription, AirTicketsQuatation, VisaCostQuatation, HotelQuatation, RestaurantQuatation, EntrancesQuatation, SapSanQuatation, Client, Vendor, Service, CustomUser,Guide,Transport
+from payment.models import Groupdescription, AirTicketsQuatation, VisaCostQuatation, HotelQuatation, RestaurantQuatation, EntrancesQuatation, SapSanQuatation, Client, Vendor, Service, CustomUser,Guide,Transport, AllServices
 
 def client_status_count(a,client_payment_status):
     count = Groupdescription.objects.filter(groupdescription_client_id=a[0],groupdescription_payment_status=client_payment_status).all().count()
@@ -245,5 +245,28 @@ def sapsan_list():
     sapsan_dict = dict(zip(x,final))
     return sapsan_dict
 
-    
 
+def all_service_dictionary_generator():
+    allservices = AllServices.objects.all()
+    all_service_dict = {}
+    services_list = []
+    for all_service in allservices:
+        services_list = []
+        if all_service.allservices_airticket == True:
+            services_list.append("Air Ticket Service,")
+        if all_service.allservices_visacost == True:
+            services_list.append("Visa Cost Service,")
+        if all_service.allservices_hotel == True:
+            services_list.append("Hotel Service,")
+        if all_service.allservices_restaurant == True:
+            services_list.append("Restaurant Service,")
+        if all_service.allservices_entrances == True:
+            services_list.append("Entrances Service,")
+        if all_service.allservices_sapsan == True:
+            services_list.append("SapSan Service,")
+        if all_service.allservices_guide == True:
+            services_list.append("Guide Service,")
+        if all_service.allservices_transport == True:
+            services_list.append("Transport Service")
+        all_service_dict[all_service.pk]=services_list
+    return all_service_dict

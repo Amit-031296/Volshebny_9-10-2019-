@@ -1,5 +1,5 @@
 {% extends 'payment/base.html' %}
-{% load group_vtref_filters %}
+{% load all_services_list_filters %}
 {% load static %}
 
 {% block stylesheets %}
@@ -22,18 +22,15 @@
 			<i class="fas fa-align-left"></i>
 		</button>
 		<hr>
-		{% if payment_status == "Done" %}
-		<h1>All Payment Cleared Tours of {{vendor_name|title}} </h1>
-		{% else %}
-		<h1>All Payment Pending Tours of {{vendor_name|title}} </h1>
-		{% endif %}
-		<hr>
+		<h2>All Services Vendor Details</h2>
+	<hr>
 		<div>
 			{% if vendor_pending %}
 			<table id="test_table">
 				<thead style="font-size:12px">
 					<tr>
-						<th class="text-center" scope="col">VT Ref Number</th>
+						<th class="text-center" scope="col">Sr. No.</th>
+						<th class="text-center" scope="col">Services In Package</th>
 						<th class="text-center" scope="col">Service Number Of Passengers</th>
 						<th class="text-center" scope="col">Quote Per Head</th>
 						<th class="text-center" scope="col">Service ROE</th>
@@ -50,7 +47,8 @@
 				<tbody style="font-size:11px">
 					{% for vendor in vendor_pending %}
 					<tr>
-						<td class="text-center"><a href="{% url 'payment:add_services' vendor.service_id %}">{{ group_dict|get_item:vendor.service_id }}</a></td>
+						<td class="text-center" scope="row">{{ forloop.counter }}</td>
+						<td class="text-center">{{ allservices_dict|get_item:vendor.pk }}</td>
 						<td class="text-center">{{ vendor.service_number_of_passengers }}</td>
 						<td class="text-center">{{ vendor.service_quote_per_head }}</td>
 						<td class="text-center">{{ vendor.service_roe }}</td>
@@ -74,9 +72,6 @@
 					{% endfor %}
 				</tbody>
 			</table>
-			<div>
-                        <b>Total Amount</b> : <i> Rs. {{ payment_total }} </i>
-                    </div>
 			{% else %}
 
 			<p class="no-leads text-primary">No entry added yet.</p>

@@ -48,9 +48,6 @@ path('clientlist/', views.client_list, name='clientlist'),
 # Vendors List
 path('vendorlist/', views.vendor_list, name='vendorlist'),
 
-# All Services Vendors List
-path('all_services_vendorlist/', views.all_services_vendor_list, name='all_services_vendorlist'),
-
 # experiment
 path('experiment/', views.experiment, name='experiment'),
 
@@ -78,6 +75,10 @@ path('vendor_accounts_guide/', views.vendor_accounts_guide, name='vendor_account
 
 # -- Transport Account Url---
 path('vendor_accounts_transport/', views.vendor_accounts_transport, name='vendor_accounts_transport'),
+
+# All Services Vendors List
+path('all_services_vendorlist/', views.all_services_vendor_list, name='all_services_vendorlist'),
+
 
 # </------ Sidemenu Urls ------
 
@@ -135,6 +136,9 @@ path('add_service_guide_form_submit/<int:service_id>', views.add_service_guide_f
 
 # -- Transport form_submit Url----
 path('add_service_transport_form_submit/<int:service_id>', views.add_service_transport_form_submit, name='add_service_transport_form_submit'),
+
+# -- Allservices form_submit Url----
+path('add_service_allservices_form_submit/<int:service_id>', views.add_service_allservices_form_submit, name='add_service_allservices_form_submit'),
 
 #</------ All Form Submit Processing URL ----------- 
 
@@ -198,8 +202,6 @@ path('vendor_summary/<int:pk>',views.VendorSummary.as_view(), name='vendor_summa
 # Vendor - Add a new vendor
 path('add_new_vendor/', views.add_new_vendor_view.as_view(), name='add_new_vendor'),
 
-# --- Vendor Payment Details List ---
-re_path(r'^vendor/details/(?P<vendor_id>[\w\-\s\(\)]+)/(?P<payment_status>\w+)/$',views.vendor_payment_details_list,name='vendor_payment_list'),
 # </--- Vendors CURD URLs ---
 
 # -- vendorserviceupdateview URL --
@@ -260,6 +262,12 @@ path('addservices_transport_update/<int:pk>',views.AddServiceTransportUpdateView
 
 # AddServiceTransport - Delete
 path('addservices_transport_delete/<int:pk>',views.AddServiceTransportDeleteView.as_view(), name='addservices_transport_delete'),
+
+# AddServiceAllservice - Update
+path('addservices_allservice_update/<int:pk>',views.AddServiceAllserviceUpdateView.as_view(), name='addservices_allservice_update'),
+
+# AddServiceAllservice - Delete
+path('addservices_allservice_delete/<int:pk>',views.AddServiceAllserviceDeleteView.as_view(), name='addservices_allservice_delete'),
 # </--- Addservices CURD URLs ---
 
 
@@ -428,8 +436,11 @@ path('vendor_transport_detail_delete/<int:pk>',views.VendorTransportDetailDelete
 # --- vendor_accounts_transport_details Url ---
 re_path(r'^vendor/details/transport/(?P<vendor_id>[\w\-\s\(\)]+)/(?P<payment_status>\w+)/$',views.vendor_accounts_transport_details,name='vendor_accounts_transport_details'),
 
+
 # </--- vendor_accounts_transport  CURD URLs ---
 
+# --- Vendor Payment Details List ---
+re_path(r'^vendor/details/allservices/(?P<vendor_id>[\w\-\s\(\)]+)/(?P<payment_status>\w+)/$',views.vendor_payment_details_list,name='vendor_payment_list'),
 # --- Services URLs ---
 #path('add_services/',views.add_services, name='add_services'),
 

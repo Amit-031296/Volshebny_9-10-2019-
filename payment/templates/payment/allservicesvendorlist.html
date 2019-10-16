@@ -1,5 +1,4 @@
 {% extends 'payment/base.html' %}
-{% load service_list_filters %}
 {% load static %}
 
 {% block stylesheets %}
@@ -25,18 +24,17 @@
                 </button>
                 <hr>
 
-                <h2>All Services Vendor Accounts<span style="float: right"><button class="create_new_vendor btn btn-info">Add a New Vendor</button></span></h2>
+                <h2>All Services Vendor Accounts</h2>
 
         <hr>
             <div>   
-                {% if vendor_list %}  
-                        <table id="test_table" class="display" style="width:100%">
+                
+                        <table id="test_table" class="display" style="width:100%; text-align: center">
                             <thead>
                                 <tr>
                                                         <th>Serial No.</th>
                                                         <th>Vendor Id</th>
                                                         <th>Vendor Name</th>
-                                                        
                                                         <th>Payment Pending</th>
                                                         <th>Payment Done</th>
                                                         <th>Amount Pending</th>
@@ -49,26 +47,26 @@
                               </tr>
                             </thead>
                             <tbody>
-                           {% for vendor in vendor_list %}
+                           {% for key,value in allservices_list.items %}
                             <tr>
 
                             <th class="text-center" scope="row">{{ forloop.counter }}</th>
-                       <td class="text-center">{{ vendor.pk }}</td>
+                       <td class="text-center">{{ key.0 }}</td>
                        
-                        <td class="text-center">{{ vendor.vendor_name }}</td>
-                        <td class="text-center"><a href="{% url 'payment:vendor_payment_list' payment_status='Pending' vendor_id=vendor.pk %}">{{ vendor_dict_pending|get_item:vendor.pk}}</a> </td>
-                       <td class="text-center"><a href="{% url 'payment:vendor_payment_list' payment_status='Done' vendor_id=vendor.pk %}">{{ vendor_dict_done|get_item:vendor.pk}}</a></td>
-                        <td class="text-center">{{ vendor_amount_pending|get_item:vendor.pk}}</td>
-                        <td class="text-center">{{ vendor_amount_done|get_item:vendor.pk}}</td>
+                        <td class="text-center">{{ key.1 }}</td>
+                        <td class="text-center"><a href="{% url 'payment:vendor_payment_list' payment_status='Pending' vendor_id=key.0 %}">{{value.0}}</a> </td>
+                       <td class="text-center"><a href="{% url 'payment:vendor_payment_list' payment_status='Done' vendor_id=key.0 %}">{{value.1}}</a></td>
+                        <td class="text-center">{{ value.2 }}</td>
+                        <td class="text-center">{{ value.3 }}</td>
                         <td>
-                            <button type="button" class="update-book btn btn-sm btn-primary" data-id="{% url 'payment:vendor_update' pk=vendor.pk %}">
+                            <button type="button" class="update-book btn btn-sm btn-primary" data-id="{% url 'payment:vendor_update' pk=key.0 %}">
                                 <span class="fa fa-edit"></span>
                             </button>
                         </td>
                         {% if user_role == 1 %}
                         <td>
                         
-                            <button type="button" class="delete-book btn btn-sm btn-danger" data-id="{% url 'payment:vendor_delete' pk=vendor.pk %}">
+                            <button type="button" class="delete-book btn btn-sm btn-danger" data-id="{% url 'payment:vendor_delete' pk=key.0 %}">
                                 <span class="fa fa-trash"></span>
                             </button>
                             
@@ -80,9 +78,7 @@
                         
                              </tbody>
                         </table>
-                       {% else %}
-            <p class="no-leads text-primary">No entry added yet.</p>
-           {% endif %}
+   
                 </div>
                 <!--TEST TABLE ENDS HERE-->
             </div>
@@ -118,9 +114,6 @@ $('#test_table').DataTable({
 </script>
     <script type="text/javascript">
     $(function() {
-              $(".create_new_vendor").modalForm({
-        formURL: "{% url 'payment:add_new_vendor' %}"
-    });
         $(".update-book").each(function() {
             $(this).modalForm({
                 formURL: $(this).data('id')

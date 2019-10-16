@@ -1,5 +1,5 @@
 from django import forms
-from payment.models import Groupdescription, AirTicketsQuatation, VisaCostQuatation, HotelQuatation, RestaurantQuatation, EntrancesQuatation, SapSanQuatation, Client, Vendor, Service, CustomUser,Guide,Transport
+from payment.models import Groupdescription, AirTicketsQuatation, VisaCostQuatation, HotelQuatation, RestaurantQuatation, EntrancesQuatation, SapSanQuatation, Client, Vendor, Service, CustomUser,Guide,Transport,AllServices
 from bootstrap_modal_forms.forms import BSModalForm
 
 class GroupdescriptionForm(forms.ModelForm):
@@ -65,7 +65,9 @@ class Client_UpdateForm(BSModalForm):
         fields= ('client_name',
         'client_address',
         'client_email',
-        'client_telephone')
+        'client_telephone',
+        'client_company_name',
+        'client_website')
 
 class Vendor_UpdateForm(BSModalForm):
     class Meta:
@@ -178,6 +180,25 @@ class AddTransport(BSModalForm):
     class Meta:
         model = Transport
         fields=('transport_type_of_vehicle',
+        'service_roe',
+        'service_gst',
+        'service_quote_per_head',
+        'service_number_of_passengers',
+        'service_total_amount',
+        'service_payment_method',
+        'service_vendor_payment_status')
+
+class AddAllservices(BSModalForm):
+    class Meta:
+        model = AllServices
+        fields=('allservices_airticket',
+        'allservices_visacost',
+        'allservices_hotel',
+        'allservices_restaurant',
+        'allservices_entrances',
+        'allservices_sapsan',
+        'allservices_guide',
+        'allservices_transport',
         'service_roe',
         'service_gst',
         'service_quote_per_head',

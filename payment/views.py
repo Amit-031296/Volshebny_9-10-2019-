@@ -14,8 +14,8 @@ from bootstrap_modal_forms.generic import (BSModalCreateView,
                                            BSModalDeleteView)
 
 #Project Imports
-from payment.models import Groupdescription, AirTicketsQuatation, VisaCostQuatation, HotelQuatation, RestaurantQuatation, EntrancesQuatation, SapSanQuatation,Transport, Client, Vendor, Service, CustomUser,Guide
-from payment.forms import GroupdescriptionForm, GroupdescriptionForm_UpdateForm, Client_UpdateForm, Vendor_UpdateForm,AddAirticket, AddVisacost,AddHotel,AddRestaurant,AddEntrances,AddSapsan,AddGuide,AddTransport,DateForm,ServiceForm_UpdateForm,CustomUserForm    
+from payment.models import Groupdescription, AirTicketsQuatation, VisaCostQuatation, HotelQuatation, RestaurantQuatation, EntrancesQuatation, SapSanQuatation,Transport, Client, Vendor, Service, CustomUser,Guide,AllServices
+from payment.forms import GroupdescriptionForm, GroupdescriptionForm_UpdateForm, Client_UpdateForm, Vendor_UpdateForm,AddAirticket, AddVisacost,AddHotel,AddRestaurant,AddEntrances,AddSapsan,AddGuide,AddTransport,DateForm,ServiceForm_UpdateForm,CustomUserForm,AddAllservices    
 
 from payment import count_values
 from payment import functions
@@ -190,6 +190,7 @@ def add_services(request,pk):
     sapsan_quatations = list(SapSanQuatation.objects.all().filter(service_id=pk))
     guide_names = list(Guide.objects.all().filter(service_id=pk))
     transport_names = list(Transport.objects.all().filter(service_id=pk))
+    allservices_name = list(AllServices.objects.all().filter(service_id=pk))
     sum = 0
     if group_object.group_description_service_calculation_type=="INCLUSIVE":
         for airticket in air_tickets:
@@ -208,9 +209,12 @@ def add_services(request,pk):
             sum = sum + guide.service_total_amount
         for transport in transport_names:
             sum = sum + transport.service_total_amount
+        for allservices in allservices_name:
+            sum = sum + allservices.service_total_amount
+
         payment_total = sum
         service_list = []
-        service_list = air_tickets+visa_costs+hotel_quatations+restaurant_quatations+entrances_quatations+sapsan_quatations+guide_names+transport_names
+        service_list = air_tickets+visa_costs+hotel_quatations+restaurant_quatations+entrances_quatations+sapsan_quatations+guide_names+transport_names+allservices_name
         
     elif group_object.group_description_service_calculation_type=="EXCLUSIVE":
         for hotel in hotel_quatations:
@@ -225,9 +229,11 @@ def add_services(request,pk):
             sum = sum + guide.service_total_amount
         for transport in transport_names:
             sum = sum + transport.service_total_amount
+        for allservices in allservices_name:
+            sum = sum + allservices.service_total_amount
         payment_total = sum
         service_list = []
-        service_list = air_tickets+visa_costs+hotel_quatations+restaurant_quatations+entrances_quatations+sapsan_quatations+guide_names+transport_names
+        service_list = air_tickets+visa_costs+hotel_quatations+restaurant_quatations+entrances_quatations+sapsan_quatations+guide_names+transport_names+allservices_name
     vendor_dict = {}
     for vendor in vendors:
         vendor_dict[vendor.pk] = vendor.vendor_name
@@ -251,6 +257,7 @@ def tour_summary(request,pk):
     sapsan_quatations = list(SapSanQuatation.objects.all().filter(service_id=pk))
     guide_quatations = list(Guide.objects.all().filter(service_id=pk))
     transport_names = list(Transport.objects.all().filter(service_id=pk))
+    allservices_name = list(AllServices.objects.all().filter(service_id=pk))
     sum = 0
     if group_object.group_description_service_calculation_type=="INCLUSIVE":
         for airticket in air_tickets:
@@ -269,9 +276,11 @@ def tour_summary(request,pk):
             sum = sum + guide.service_total_amount
         for transport in transport_names:
             sum = sum + transport.service_total_amount
+        for allservices in allservices_name:
+            sum = sum + allservices.service_total_amount
         payment_total = sum
         service_list = []
-        service_list = air_tickets+visa_costs+hotel_quatations+restaurant_quatations+entrances_quatations+sapsan_quatations+guide_quatations+transport_names
+        service_list = air_tickets+visa_costs+hotel_quatations+restaurant_quatations+entrances_quatations+sapsan_quatations+guide_quatations+transport_names+allservices_name
         
     elif group_object.group_description_service_calculation_type=="EXCLUSIVE":
         for hotel in hotel_quatations:
@@ -286,9 +295,11 @@ def tour_summary(request,pk):
             sum = sum + guide.service_total_amount
         for transport in transport_names:
             sum = sum + transport.service_total_amount
+        for allservices in allservices_name:
+            sum = sum + allservices.service_total_amount
         payment_total = sum
         service_list = []
-        service_list = air_tickets+visa_costs+hotel_quatations+restaurant_quatations+entrances_quatations+sapsan_quatations+guide_quatations+transport_names
+        service_list = air_tickets+visa_costs+hotel_quatations+restaurant_quatations+entrances_quatations+sapsan_quatations+guide_quatations+transport_names+allservices_name
     client_dict = {}
     for client in clients:
         client_dict[client.client_name] = client.client_name
@@ -337,29 +348,11 @@ def vendor_list(request):
 # All Services Vendors List
 @login_required(login_url='/user_login')
 def all_services_vendor_list(request):
+    allservices_list=functions.filtering_vendors("All Services")
     user_role = request.user.user_role
-    vendor_list = Vendor.objects.filter(vendor_type='All').all()
-    vendor_payment_status = ['Pending','Done']
-    vendor_payment_amount = ['AmountPending','AmountDone']
-    service_list = Service.objects.all()
-    vendor_dict_pending = {}
-    vendor_dict_done = {}
-    vendor_amount_pending = {}
-    vendor_amount_done = {}
-     
-    for vendor in vendor_list:
-        vendor_dict_pending[vendor.pk]= functions.all_vendor_services_status_payment_count(vendor.pk,'Pending')
-        vendor_dict_done[vendor.pk]= functions.all_vendor_services_status_payment_count(vendor.pk,'Done')
-        vendor_amount_pending[vendor.pk]= functions.all_vendor_services_status_payment_amountpending_count(vendor.pk,'Pending')
-        vendor_amount_done[vendor.pk]= functions.all_vendor_services_status_payment_amountpaid_count(vendor.pk,'Done')
-    data = {'vendor_list': vendor_list,
-            'vendor_dict_pending': vendor_dict_pending,
-            'vendor_dict_done':vendor_dict_done,
-            'vendor_amount_pending':vendor_amount_pending,
-            'vendor_amount_done':vendor_amount_done,
-            'user_role':user_role }
-    return render(request,'payment/allservicesvendorlist.html', data )
-
+    data = {'allservices_list':allservices_list,'user_role':user_role }
+    return render(request, 'payment/allservicesvendorlist.html',data)
+    
 
 # --All vendor accounts dropdown Views -- 
 # -- vendor_accounts_airticket_quatation View---
@@ -716,6 +709,46 @@ def add_service_transport_form_submit(request,service_id):
 
     return HttpResponseRedirect(reverse('payment:add_services',kwargs={'pk': service_id }))
 
+#-----add_service_allservices_form_submit Views ------
+@login_required(login_url='/user_login')
+def add_service_allservices_form_submit(request,service_id):
+    if request.method == "POST":
+        allservices_airticket = True if request.POST.get('allservices_airticket') == 'true' else False
+        allservices_visacost = True if request.POST.get('allservices_visacost') == 'true' else False
+        allservices_hotel = True if request.POST.get('allservices_hotel') == 'true' else False
+        allservices_restaurant = True if request.POST.get('allservices_restaurant') == 'true' else False
+        allservices_entrances = True if request.POST.get('allservices_entrances') == 'true' else False
+        allservices_sapsan = True if request.POST.get('allservices_sapsan') == 'true' else False
+        allservices_guide = True if request.POST.get('allservices_guide') == 'true' else False
+        allservices_transport = True if request.POST.get('allservices_transport') == 'true' else False
+        vendor_id = request.POST['allservices_service_vendor_id']
+        allservices_number_of_passengers = request.POST['allservices_number_of_passengers']
+        allservices_quote_per_head = request.POST['allservices_quote_per_head']
+        allservices_roe = request.POST['allservices_roe']
+        allservices_type_of_GST = request.POST['allservices_type_of_GST']
+        allservices_total_amount = request.POST['allservices_total_amount']
+
+        vendor_object = Vendor.objects.get(pk=vendor_id)
+
+        group_object = Groupdescription.objects.get(pk=service_id)
+        AllServices.objects.create(allservices_airticket = allservices_airticket,
+                                allservices_visacost = allservices_visacost,
+                                allservices_hotel = allservices_hotel,
+                                allservices_restaurant = allservices_restaurant,
+                                allservices_entrances = allservices_entrances,
+                                allservices_sapsan = allservices_sapsan,
+                                allservices_guide= allservices_guide,
+                                allservices_transport = allservices_transport,
+                                service_number_of_passengers = allservices_number_of_passengers,
+                                service_roe = allservices_roe,
+                                service_gst = allservices_type_of_GST,
+                                service_id = group_object,
+                                service_quote_per_head = allservices_quote_per_head,
+                                service_total_amount = allservices_total_amount,
+                                service_vendor_id=vendor_object )
+
+    return HttpResponseRedirect(reverse('payment:add_services',kwargs={'pk': service_id }))
+
 
 #</------ All Form Submit Processing Views -----------
 
@@ -860,38 +893,10 @@ class add_new_vendor_view(BSModalCreateView):
 # --- Vendor Payment Details List ---
 @login_required(login_url='/user_login')
 def vendor_payment_details_list(request,vendor_id,payment_status):
-    group_objects = Groupdescription.objects.all()
-    user_role = request.user.user_role
-    group_dict = {}
-    for group_object in group_objects:
-        group_dict[group_object.pk] = group_object.groupdescription_vtrefNo 
-    vendor_name = Vendor.objects.get(pk=vendor_id).vendor_name
-    vendor_object = Vendor.objects.get(pk=vendor_id)
-    vendor_pending = Service.objects.filter(service_vendor_id=vendor_object,service_vendor_payment_status=payment_status).all()
-    air_tickets = AirTicketsQuatation.objects.all().filter(service_vendor_id=vendor_object,service_vendor_payment_status=payment_status)
-    visa_costs = VisaCostQuatation.objects.all().filter(service_vendor_id=vendor_object,service_vendor_payment_status=payment_status)
-    hotel_quatations = HotelQuatation.objects.all().filter(service_vendor_id=vendor_object,service_vendor_payment_status=payment_status)
-    restaurant_quatations = RestaurantQuatation.objects.all().filter(service_vendor_id=vendor_object,service_vendor_payment_status=payment_status)
-    entrances_quatations = EntrancesQuatation.objects.all().filter(service_vendor_id=vendor_object,service_vendor_payment_status=payment_status)
-    sapsan_quatations = SapSanQuatation.objects.all().filter(service_vendor_id=vendor_object,service_vendor_payment_status=payment_status)
-    guide_names = Guide.objects.all().filter(service_vendor_id=vendor_object,service_vendor_payment_status=payment_status)
-    sum = 0
-    for airticket in air_tickets:
-        sum = sum + airticket.service_total_amount
-    for visacost in visa_costs:
-        sum = sum + visacost.service_total_amount
-    for hotel in hotel_quatations:
-        sum = sum + hotel.service_total_amount
-    for restaurant in restaurant_quatations:
-        sum = sum + restaurant.service_total_amount
-    for entrance in entrances_quatations:
-        sum = sum + entrance.service_total_amount
-    for sapsan in sapsan_quatations:
-        sum = sum + sapsan.service_total_amount
-    for guide in guide_names:
-        sum = sum + guide.service_total_amount
-    payment_total = sum
-    data = {"vendor_pending": vendor_pending,"payment_status":payment_status,"vendor_name":vendor_name,'payment_total':payment_total,'group_dict':group_dict,'user_role':user_role }
+    vendor_pending = AllServices.objects.filter(service_vendor_id=vendor_id,service_vendor_payment_status=payment_status).all()
+    userrole = request.user.user_role
+    allservices_dict = functions.all_service_dictionary_generator
+    data = {"userrole":userrole, "vendor_pending": vendor_pending,'allservices_dict':allservices_dict }
     return render(request, 'payment/vendor_payment_details.html',data)
 
 # </---- Vendors CURD views ----
@@ -899,9 +904,9 @@ def vendor_payment_details_list(request,vendor_id,payment_status):
 # -- vendorserviceupdateview View --
 @method_decorator(login_required, name='dispatch')
 class vendorserviceupdateview(BSModalUpdateView):
-    model = Service
+    model = AllServices
     template_name = 'payment/update_entry.html'
-    form_class = ServiceForm_UpdateForm
+    form_class = AddAllservices
     success_message = 'Success: Service was updated.'
     
     def get_success_url(self,**kwargs):
@@ -913,7 +918,7 @@ class vendorserviceupdateview(BSModalUpdateView):
 # -- vendorservicedeleteview View --
 @method_decorator(login_required, name='dispatch')
 class vendorservicedeleteview(BSModalDeleteView):
-    model = Service
+    model = AllServices
     template_name = 'payment/delete_entry.html'
     success_message = 'Success: Service was deleted.'
 
@@ -1147,6 +1152,32 @@ class AddServiceTransportDeleteView(BSModalDeleteView):
         group_description_pk = Transport_Model_Object.service_id
         return reverse_lazy('payment:add_services', kwargs={'pk': group_description_pk })
 #</-----add_services transport -----
+#-----add_services allservice----- 
+#Update View
+@method_decorator(login_required, name='dispatch')
+class AddServiceAllserviceUpdateView(BSModalUpdateView):
+    model = AllServices
+    template_name = 'payment/update_entry.html'
+    form_class = AddAllservices
+    success_message = 'Success: Entry was updated.'
+    success_url = reverse_lazy('payment:add_services')
+    def get_success_url(self,**kwargs):
+        AllServices_Model_Object = AllServices.objects.get(pk=self.kwargs['pk'])
+        group_description_pk = AllServices_Model_Object.service_id
+        return reverse_lazy('payment:add_services', kwargs={'pk': group_description_pk })
+
+# Delete View
+@method_decorator(login_required, name='dispatch')
+class AddServiceAllserviceDeleteView(BSModalDeleteView):
+    model = AllServices
+    template_name = 'payment/delete_entry.html'
+    success_message = 'Success: Entry was deleted.'
+    success_url = reverse_lazy('payment:add_services')
+    def get_success_url(self,**kwargs):
+        AllServices_Model_Object = AllServices.objects.get(pk=self.kwargs['pk'])
+        group_description_pk = AllServices_Model_Object.service_id
+        return reverse_lazy('payment:add_services', kwargs={'pk': group_description_pk })
+#</-----add_services allservice -----
 #</--- Addservices CURD Views ---
 
 # --- vendor_accounts_airticket_quatation CURD Views ---

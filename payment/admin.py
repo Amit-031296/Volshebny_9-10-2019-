@@ -1,5 +1,5 @@
 from django.contrib import admin
-from payment.models import Groupdescription,AirTicketsQuatation,VisaCostQuatation,HotelQuatation,RestaurantQuatation,EntrancesQuatation,SapSanQuatation,CustomUser,Vendor,Client,Service,Guide,Transport
+from payment.models import Groupdescription,AirTicketsQuatation,VisaCostQuatation,HotelQuatation,RestaurantQuatation,EntrancesQuatation,SapSanQuatation,CustomUser,Vendor,Client,Service,Guide,Transport,AllServices
 
 # Register your models here.
 
@@ -59,6 +59,19 @@ class GuideAdmin(admin.ModelAdmin):
         "service_type",
     ]
 
+class AllServicesAdmin(admin.ModelAdmin):
+    list_display = [
+        "pk",
+        "allservices_airticket",
+        "allservices_visacost",
+        "allservices_hotel",
+        "allservices_restaurant",
+        "allservices_entrances",
+        "allservices_sapsan",
+        "allservices_guide",
+        "allservices_transport",
+    ]
+
 class GroupdescriptionAdmin(admin.ModelAdmin):
     search_fields = ["groupdescription_vtrefNo", "groupdescription_client_id"]
     list_filter = ["groupdescription_client_id", "groupdescription_payment_status"]
@@ -84,5 +97,6 @@ admin.site.register(Guide,GuideAdmin)
 admin.site.register(CustomUser)
 admin.site.register(Vendor,VendorAdmin)
 admin.site.register(Client,ClientAdmin)
+admin.site.register(AllServices,AllServicesAdmin)
 admin.site.register(Service)
 

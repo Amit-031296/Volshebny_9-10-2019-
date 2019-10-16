@@ -733,6 +733,102 @@
     </div>
 </div>
 <!-- /Transport Modal -->
+<!-- AllServices Modal -->
+<div class="modal fade" id="AllServicesModal" tabindex="-1" role="dialog" aria-labelledby="AllServicesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="AllServicesModalLabel">Add New AllServices</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'payment:add_service_allservices_form_submit' service_id=grdes.pk %}" method="post">
+                    {% csrf_token %}
+                    <div>
+                     <div>
+                            <label for="Vendor Name">Vendor Name</label>
+                            <div class="form-group">
+                                <select class="form-control" id="allservices_service_vendor_id" name="allservices_service_vendor_id">
+                                    {% for vendor in vendors %}
+                                    <option value={{ vendor.pk }}>{{ vendor.vendor_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <br>
+                        </div>
+                        <br>
+                        <div>
+                            <label for="Tick All Services Taken">Tick All Services Taken</label>
+                            <div class="form-group">
+    <div class="col">
+      <label><input type="checkbox" value="true" id="allservices_airticket" name="allservices_airticket">Air Ticket Services</label>
+    </div>
+    <div class="col">
+      <label><input type="checkbox" value="true" id="allservices_visacost" name="allservices_visacost">Visa Cost Service</label>
+    </div>
+    <div class="col">
+      <label><input type="checkbox" value="true" id="allservices_hotel" name="allservices_hotel">Hotel Service</label>
+    </div>
+    <div class="col">
+      <label><input type="checkbox" value="true" id="allservices_restaurant" name="allservices_restaurant">Restaurant Service</label>
+    </div>
+    <div class="col">
+      <label><input type="checkbox" value="true" id="allservices_entrances" name="allservices_entrances">Entrances Service</label>
+    </div>
+    <div class="col">
+      <label><input type="checkbox" value="true" id="allservices_sapsan" name="allservices_sapsan">SapSan Service</label>
+    </div>
+    <div class="col">
+      <label><input type="checkbox" value="true" id="allservices_guide" name="allservices_guide">Guide Service</label>
+    </div>
+    <div class="col">
+      <label><input type="checkbox" value="true" id="allservices_transport" name="allservices_transport">Transport Service</label>
+    </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div>
+                            <label for="Number of Passengers">Number of Passengers</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="allservices_number_of_passengers" name="allservices_number_of_passengers" min="1">
+                            </div>
+                        </div>
+                        <br>
+                        <div>
+                            <label for="Quote Per Head">Quote Per Head</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="allservices_quote_per_head" name="allservices_quote_per_head" min="1">
+                            </div>
+                        </div>
+                        <br>
+                        <div>
+                            <label for="AllServices ROE">AllServices ROE</label>
+                            <input type="text" class="form-control" id="allservices_roe" name="allservices_roe" min="1">
+                        </div>
+                        <br>
+                        <div>
+                            <label for="GST Percentage">GST Percentage</label>
+                            
+                                <input type="number" class="form-control" id="allservices_type_of_GST" name="allservices_type_of_GST" min="0">
+                        </div>
+                        <br>
+                        <div>
+                            <label for="Total Amount">Total Amount</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="allservices_total_amount" name="allservices_total_amount" onclick="myFunction9()" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <input type="submit" class='btn btn-primary' value="Create AllServices">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Transport Modal -->
 {% block script %}
 <script>
     $(function() {
@@ -856,5 +952,18 @@
                 
                 document.getElementById("transport_total_amount").value = gst_amount;
             }
-        </script>             
+        </script>    
+<script>
+            function myFunction9() {
+                var quote_per_head = document.getElementById("allservices_quote_per_head").value;
+                var no_of_passenger = document.getElementById("allservices_number_of_passengers").value;
+                var Roe = document.getElementById("allservices_roe").value;
+                var gst_percent = document.getElementById("allservices_type_of_GST").value;
+                var gst = gst_percent/100;
+                var nod = quote_per_head * no_of_passenger * Roe ;
+                var gst_amount = (nod + (nod*gst)).toFixed(2);
+                
+                document.getElementById("allservices_total_amount").value = gst_amount;
+            }
+        </script>           
 {% endblock %}

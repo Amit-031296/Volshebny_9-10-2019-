@@ -150,6 +150,7 @@
                     <button type="button" class="dropdown-item" data-toggle="modal" data-target="#SapSanQuatationModal">Create SapSan Quatation</button>
                     <button type="button" class="dropdown-item" data-toggle="modal" data-target="#GuideModal">Create Guide</button>
                     <button type="button" class="dropdown-item" data-toggle="modal" data-target="#TransportModal">Create Transport</button>
+                    <button type="button" class="dropdown-item" data-toggle="modal" data-target="#AllServicesModal">Create AllServices</button>
                 </div>
             </div>
             <hr>
@@ -290,9 +291,21 @@
                         </td>
                         {% endif %}
                         
-                        {% endif %}     
+                        {% elif service_list.service_type == "All Services" %} 
+                         <td>
+                            <button type="button" class="update_allservices btn btn-sm btn-primary" data-id="{% url 'payment:addservices_allservice_update' service_list.pk %}">
+                                <span class="fa fa-edit"></span>
+                            </button>
+                        </td>
+                        {% if user_role == 1 %}
+                        <td>
+                            <button type="button" class="delete_allservices btn btn-sm btn-danger" data-id="{% url 'payment:addservices_allservice_delete' service_list.pk %}">
+                                <span class="fa fa-trash"></span>
+                            </button>
+                        </td>
+                        {% endif %}  
 
-
+                    {% endif %}  
 
 
 
@@ -519,6 +532,26 @@ $('#test_table').DataTable({
             });
         });
         $(".delete_transport").each(function() {
+            $(this).modalForm({
+                formURL: $(this).data('id')
+            });
+        });
+
+        $(".read-book").each(function() {
+            $(this).modalForm({
+                formURL: $(this).data('id')
+            });
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(function() {
+        $(".update_allservices").each(function() {
+            $(this).modalForm({
+                formURL: $(this).data('id')
+            });
+        });
+        $(".delete_allservices").each(function() {
             $(this).modalForm({
                 formURL: $(this).data('id')
             });
